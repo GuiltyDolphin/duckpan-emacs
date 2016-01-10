@@ -28,5 +28,13 @@
 
 ;;; Code:
 
+(require 'magit)
+
+(defun initialize-spice-repo (username)
+  "Initialize a zeroclickinfo-spice repository from USERNAME's fork."
+  (interactive "MEnter your GitHub username: ")
+  (magit clone (format "https://github.com/%s/zeroclickinfo-spice" username) "zeroclickinfo-spice"))
+
+
 (provide 'duckpan)
 ;;; duckpan.el ends here
