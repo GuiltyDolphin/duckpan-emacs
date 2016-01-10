@@ -28,12 +28,78 @@
 
 ;;; Code:
 
-(require 'magit)
+(defcustom duckpan-repos
+  '("zeroclickinfo-goodies" "zeroclickinfo-spice")
+  "Repositories duckpan is configured for."
+  :group 'duckpan
+  :type 'list)
 
-(defun initialize-spice-repo (username)
-  "Initialize a zeroclickinfo-spice repository from USERNAME's fork."
+(defun duckpan-project-p (path)
+  "T if PATH is in a duckpan-configured project."
+  (let ((project (duckpan-project-root path)))
+    (when project
+      (= 0 (with-temp-buffer
+             (cd project)
+             (duckpan-git "status"))))))
+
+(defun duckpan-get-ddg-project-type (path)
+  "Get the project type for PATH.
+
+Return NIL if no project is found."
+  (let ((path (buffer-file-name)))
+    (catch 'pval
+      (dolist (project duckpan-repos)
+        (when (string-match-p project path) (throw 'pval project))))))
+
+(defun duckpan-project-root (path)
+  "Get the directory in PATH in which to execute duckpan commands."
+  (let ((project (duckpan-get-ddg-project-type path)))
+    (when project
+      (let* ((full-path (buffer-file-name))
+             (start (string-match project full-path)))
+        (when start
+          (file-name-as-directory
+           (concat (substring full-path 0 start) project)))))))
+
+(defun duckpan-github-url (user repo)
+  "Get the GitHub URL in the form https://github.com/USER/REPO."
+  (format "https://github.com/%s/%s" user repo))
+
+(defun duckpan-clone (url)
+  "Clone the repository of URL into the current directory."
+  (with-temp-buffer
+    (call-process "git" nil t nil "clone" url)))
+
+(defun duckpan-git (&rest args)
+  "Call git with ARGS."
+  (apply 'call-process "git" nil nil nil args))
+
+(defun duckpan-setup-upstream (repo)
+  "Initialize an upstream remote for REPO."
+  (duckpan-git "remote" "add" "upstream" (duckpan-github-url "duckduckgo" repo)))
+
+(defun duckpan-fetch-upstream ()
+  "Pull and merge from the upstream repository."
+  (duckpan-git "fetch" "upstream")
+  (duckpan-git "merge" "upstream/master" "master"))
+
+(defun duckpan-choose-repo ()
+  "Get the user to choose from the repositories specified in DUCKPAN-REPOS."
+  (completing-read "Which repository to configure?: " duckpan-repos))
+
+(defun duckpan-initialize-repo (user)
+  "Initialize USER's fork of a DuckDuckGo repository."
   (interactive "MEnter your GitHub username: ")
-  (magit clone (format "https://github.com/%s/zeroclickinfo-spice" username) "zeroclickinfo-spice"))
+  (let* ((repo (duckpan-choose-repo))
+         (fork (duckpan-github-url user repo)))
+    (if (file-exists-p repo)
+        (message "There is already a directory with the name '%s'" repo)
+      (if (duckpan-project-p default-directory)
+          (message "Already in a duckpan-configured directory")
+        (duckpan-clone fork)
+        (with-temp-buffer
+          (cd repo)
+          (duckpan-setup-upstream repo))))))
 
 
 (provide 'duckpan)
