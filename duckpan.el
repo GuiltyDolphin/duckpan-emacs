@@ -101,6 +101,25 @@ Return NIL if no project is found."
           (cd repo)
           (duckpan-setup-upstream repo))))))
 
+(defun duckpan-get-install ()
+  "Retrieve duckpan installation script."
+  (with-temp-buffer
+    (call-process "curl" nil t nil "http://duckpan.org/install.pl")
+    (buffer-string)))
+
+(defun duckpan-install ()
+  "Install duckpan."
+  (let ((install-script (duckpan-get-install)))
+    (message "Installing duckpan...")
+    (call-process "perl" nil nil nil install-script)
+    (message "duckpan successfully installed")))
+
+(defun duckpan-setup ()
+  "Setup duckpan."
+  (if (executable-find "duckpan")
+      (message "duckpan is already installed on the system.")
+    (duckpan-install)))
+
 
 (provide 'duckpan)
 ;;; duckpan.el ends here
