@@ -120,6 +120,42 @@ Return NIL if no project is found."
       (message "duckpan is already installed on the system.")
     (duckpan-install)))
 
+(defun duckpan-normalize-project-type (type)
+  "Return a normalized version of TYPE.
+
+The normalized version is one of Goodie or Spice."
+  (if (string-match-p "goodies" type)
+      "Goodie"
+    (when (string-match-p "spice" type) "Spice")))
+
+(defun duckpan-ia-path (type)
+  "Get the expected instant-answer path from the root directory for TYPE."
+  (let ((project-type (duckpan-normalize-project-type type)))
+    (print (format "Project type: %s" project-type))
+    (file-name-as-directory (format "lib/DDG/%s/" project-type))))
+
+(defun duckpan-instant-answers ()
+  "Get the instant answers for the current project."
+  (let* ((project-type (duckpan-get-ddg-project-type default-directory))
+         (project-root (duckpan-project-root default-directory))
+         (ia-path (concat project-root (duckpan-ia-path project-type)))
+         (ias (directory-files ia-path nil "\.pm$")))
+    (mapcar 'file-name-base ias)))
+
+(defun duckpan-full-ia-path ()
+  "Get the full instant-answer path for the current project."
+  (let* ((project-type (duckpan-get-ddg-project-type default-directory))
+        (project-path (duckpan-project-root default-directory))
+        (ia-path (duckpan-ia-path project-type)))
+    (concat project-path ia-path)))
+
+(defun duckpan-goto-instant-answer (&optional name)
+  "Goto to the instant answer file for NAME."
+  (interactive)
+  (let ((name (or name (completing-read "Choose an instant answer: " (duckpan-instant-answers))))
+        (path (duckpan-full-ia-path)))
+    (find-file (concat path name ".pm"))))
+
 
 (provide 'duckpan)
 ;;; duckpan.el ends here
