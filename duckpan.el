@@ -128,19 +128,44 @@ Return NIL if no project is found."
       (message "duckpan is already installed on the system.")
     (duckpan-install)))
 
-(defun duckpan-normalize-project-type (type)
-  "Return a normalized version of TYPE.
-
-The normalized version is one of Goodie or Spice."
-  (if (string-match-p "goodies" type)
-      "Goodie"
-    (when (string-match-p "spice" type) "Spice")))
+(defun duckpan-ia-name-to-share (name)
+  "Return a valid share directory version of NAME."
+  (substring (downcase
+              (let ((case-fold-search nil))
+                (replace-regexp-in-string "[A-Z]" (lambda (c) (format "_%s" c)) name)))
+             1))
 
 (defun duckpan-ia-path (type)
   "Get the expected instant-answer path from the root directory for TYPE."
-  (let ((project-type (duckpan-normalize-project-type type)))
-    (print (format "Project type: %s" project-type))
-    (file-name-as-directory (format "lib/DDG/%s/" project-type))))
+  (file-name-as-directory (format "lib/DDG/%s/" type)))
+
+(defun duckpan-ia-path-to-perl (type name)
+  "Get the expected relative perl path for a TYPE instant-answer called NAME.
+
+TYPE should be one of Spice or Goodie."
+  (concat (duckpan-ia-lib-directory type) (format "%s.pm" name)))
+
+(defun duckpan-ia-path-to-js (type name)
+  "Get the expected relative javascript path for a TYPE instant-answer called NAME."
+  (concat (duckpan-ia-share-directory type name)
+          (format "%s.js" (duckpan-ia-name-to-share name))))
+
+(defun duckpan-ia-lib-directory (type)
+  "Return the lib directory for a project type TYPE."
+  (format "lib/DDG/%s/" type))
+
+
+(defun duckpan-ia-share-directory (type name)
+  "Return the share directory for a project type TYPE for NAME."
+  (format "share/%s/%s/" (downcase type) (duckpan-ia-name-to-share name)))
+
+(defun duckpan-ia-paths-for-type (type name)
+  "Return standard paths for a TYPE project called NAME."
+  (cond
+   ((equal type "Goodie") (list (duckpan-ia-path-to-perl type name)))
+   ((equal type "Spice") (list (duckpan-ia-path-to-perl type name)
+                               (duckpan-ia-path-to-js type name)))))
+
 
 (defun duckpan-instant-answers ()
   "Get the instant answers for the current project."
@@ -150,20 +175,21 @@ The normalized version is one of Goodie or Spice."
          (ias (directory-files ia-path nil "\.pm$")))
     (mapcar 'file-name-base ias)))
 
-(defun duckpan-full-ia-path ()
-  "Get the full instant-answer path for the current project."
+(defun duckpan-full-ia-paths (name)
+  "Get the full instant-answer paths for NAME."
   (let* ((project-type (duckpan-get-ddg-project-type default-directory))
         (project-path (duckpan-project-root default-directory))
-        (ia-path (duckpan-ia-path project-type)))
-    (concat project-path ia-path)))
+        (ia-paths (duckpan-ia-paths-for-type project-type name)))
+    (mapcar (lambda (path) (concat project-path path)) ia-paths)))
 
 ;;;###autoload
 (defun duckpan-goto-instant-answer (&optional name)
   "Goto to the instant answer file for NAME."
   (interactive)
-  (let ((name (or name (completing-read "Choose an instant answer: " (duckpan-instant-answers))))
-        (path (duckpan-full-ia-path)))
-    (find-file (concat path name ".pm"))))
+  (let* ((name (or name (completing-read "Choose an instant answer: " (duckpan-instant-answers))))
+         (paths (duckpan-full-ia-paths name)))
+    (dolist (path paths) (find-file-other-window path))))
+
 
 
 (provide 'duckpan)
