@@ -16,8 +16,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;; Author: Ben Moon <guiltydolphin@gmail.com>
-;; Version: 0.1
-;; Package-requires: ((magit "2.4.0"))
+;; Version: 0.1.1
 ;; Keywords: duckpan, DuckDuckHack, DuckDuckGo
 ;; URL: https://github.com/GuiltyDolphin/duckpan-emacs
 
