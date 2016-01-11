@@ -141,10 +141,6 @@ Return NIL if no project is found."
                 (replace-regexp-in-string "[A-Z]" (lambda (c) (format "_%s" c)) name)))
              1))
 
-(defun duckpan-ia-path (type)
-  "Get the expected instant-answer path from the root directory for TYPE."
-  (file-name-as-directory (format "lib/DDG/%s/" type)))
-
 (defun duckpan-ia-path-to-perl (type name)
   "Get the expected relative perl path for a TYPE instant-answer called NAME.
 
@@ -177,7 +173,7 @@ TYPE should be one of Spice or Goodie."
   "Get the instant answers for the current project."
   (let* ((project-type (duckpan-get-ddg-project-type default-directory))
          (project-root (duckpan-project-root default-directory))
-         (ia-path (concat project-root (duckpan-ia-path project-type)))
+         (ia-path (concat project-root (duckpan-ia-lib-directory project-type)))
          (ias (directory-files ia-path nil "\.pm$")))
     (mapcar 'file-name-base ias)))
 
