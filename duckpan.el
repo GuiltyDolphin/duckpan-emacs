@@ -200,6 +200,7 @@ TYPE should be one of Spice or Goodie."
   "Get the url for NAME."
   (format "%s%s" duckpan-instant-answer-url-base (duckpan-ia-name-to-share name)))
 
+;;;###autoload
 (defun duckpan-navigate-to-instant-answer-page (&optional name)
   "Open the instant answer page for NAME in a browser."
   (interactive)
