@@ -104,7 +104,8 @@ Return NIL if no project is found."
         (message "There is already a directory with the name '%s'" repo)
       (if (duckpan-project-p default-directory)
           (message "Already in a duckpan-configured directory")
-        (duckpan-clone fork)
+        (with-temp-message (format "Cloning into %s" fork)
+          (duckpan-clone fork))
         (with-temp-buffer
           (cd repo)
           (duckpan-setup-upstream repo))))))
@@ -117,10 +118,9 @@ Return NIL if no project is found."
 
 (defun duckpan-install ()
   "Install duckpan."
-  (let ((install-script (duckpan-get-install)))
-    (message "Installing duckpan...")
-    (call-process "perl" nil nil nil install-script)
-    (message "duckpan successfully installed")))
+  (with-temp-message "Installing duckpan..."
+    (let ((install-script (duckpan-get-install)))
+      (call-process "perl" nil nil nil install-script))))
 
 (defun duckpan-setup ()
   "Setup duckpan."
