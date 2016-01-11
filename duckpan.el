@@ -35,6 +35,12 @@
   :group 'duckpan
   :type 'list)
 
+(defcustom duckpan-instant-answer-url-base
+  "https://duck.co/ia/view/"
+  "Base URL for instant answers."
+  :group 'duckpan
+  :type 'string)
+
 (defun duckpan-project-repos ()
   "Available project repositories."
   (mapcar 'cdr duckpan-instant-answer-projects))
@@ -182,13 +188,27 @@ TYPE should be one of Spice or Goodie."
         (ia-paths (duckpan-ia-paths-for-type project-type name)))
     (mapcar (lambda (path) (concat project-path path)) ia-paths)))
 
+(defun duckpan-choose-instant-answer ()
+  "Get the user to choose from the available instant answers."
+  (completing-read "Choose an instant answer: " (duckpan-instant-answers)))
+
 ;;;###autoload
 (defun duckpan-goto-instant-answer (&optional name)
   "Goto to the instant answer file for NAME."
   (interactive)
-  (let* ((name (or name (completing-read "Choose an instant answer: " (duckpan-instant-answers))))
+  (let* ((name (or name (duckpan-choose-instant-answer)))
          (paths (duckpan-full-ia-paths name)))
     (dolist (path paths) (find-file-other-window path))))
+
+(defun duckpan-get-instant-answer-url (name)
+  "Get the url for NAME."
+  (format "%s%s" duckpan-instant-answer-url-base (duckpan-ia-name-to-share name)))
+
+(defun duckpan-navigate-to-instant-answer-page (&optional name)
+  "Open the instant answer page for NAME in a browser."
+  (interactive)
+  (let ((name (or name (duckpan-choose-instant-answer))))
+    (browse-url (duckpan-get-instant-answer-url name))))
 
 
 
