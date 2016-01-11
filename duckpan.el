@@ -87,6 +87,7 @@ Return NIL if no project is found."
   "Get the user to choose from the repositories specified in DUCKPAN-REPOS."
   (completing-read "Which repository to configure?: " duckpan-repos))
 
+;;;###autoload
 (defun duckpan-initialize-repo (user)
   "Initialize USER's fork of a DuckDuckGo repository."
   (interactive "MEnter your GitHub username: ")
@@ -149,6 +150,7 @@ The normalized version is one of Goodie or Spice."
         (ia-path (duckpan-ia-path project-type)))
     (concat project-path ia-path)))
 
+;;;###autoload
 (defun duckpan-goto-instant-answer (&optional name)
   "Goto to the instant answer file for NAME."
   (interactive)
