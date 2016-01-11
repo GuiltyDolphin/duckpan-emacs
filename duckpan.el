@@ -28,11 +28,17 @@
 
 ;;; Code:
 
-(defcustom duckpan-repos
-  '("zeroclickinfo-goodies" "zeroclickinfo-spice")
-  "Repositories duckpan is configured for."
+(defcustom duckpan-instant-answer-projects
+  '(("Goodie" . "zeroclickinfo-goodies")
+    ("Spice" . "zeroclickinfo-spice"))
+  "Instant Answer projects and their associated repositories."
   :group 'duckpan
   :type 'list)
+
+(defun duckpan-project-repos ()
+  "Available project repositories."
+  (mapcar 'cdr duckpan-instant-answer-projects))
+
 
 (defun duckpan-project-p (path)
   "T if PATH is in a duckpan-configured project."
@@ -48,12 +54,13 @@
 Return NIL if no project is found."
   (let ((path (buffer-file-name)))
     (catch 'pval
-      (dolist (project duckpan-repos)
-        (when (string-match-p project path) (throw 'pval project))))))
+      (dolist (project (duckpan-project-repos))
+        (when (string-match-p project path)
+          (throw 'pval (car (rassoc project duckpan-instant-answer-projects))))))))
 
 (defun duckpan-project-root (path)
   "Get the directory in PATH in which to execute duckpan commands."
-  (let ((project (duckpan-get-ddg-project-type path)))
+  (let ((project (assoc-default (duckpan-get-ddg-project-type path) duckpan-instant-answer-projects)))
     (when project
       (let* ((full-path (buffer-file-name))
              (start (string-match project full-path)))
@@ -85,7 +92,7 @@ Return NIL if no project is found."
 
 (defun duckpan-choose-repo ()
   "Get the user to choose from the repositories specified in DUCKPAN-REPOS."
-  (completing-read "Which repository to configure?: " duckpan-repos))
+  (completing-read "Which repository to configure?: " (duckpan-project-repos)))
 
 ;;;###autoload
 (defun duckpan-initialize-repo (user)
