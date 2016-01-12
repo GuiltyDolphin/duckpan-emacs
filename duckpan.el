@@ -27,6 +27,17 @@
 
 ;;; Code:
 
+(defmacro duckpan-defcustom-url-part (symbol standard doc)
+  "Define a custom duck-co url variable with name SYMBOL.
+
+Default value is STANDARD and the documentation string is DOC."
+  (declare (indent defun) (doc-string 3))
+  `(defcustom ,(intern (concat "duckpan-duck-co-url-" (symbol-name symbol)))
+     ,standard
+     ,doc
+     :group 'duckpan
+     :type 'string))
+
 (defcustom duckpan-instant-answer-projects
   '(("Goodie" . "zeroclickinfo-goodies")
     ("Spice" . "zeroclickinfo-spice"))
@@ -34,11 +45,29 @@
   :group 'duckpan
   :type 'list)
 
-(defcustom duckpan-instant-answer-url-base
-  "https://duck.co/ia/view/"
-  "Base URL for instant answers."
-  :group 'duckpan
-  :type 'string)
+(duckpan-defcustom-url-part base
+  "https://duck.co"
+  "duck.co URL.")
+
+(duckpan-defcustom-url-part view-url-part
+  "view"
+  "Component of URL for viewing instant answers.")
+
+(duckpan-defcustom-url-part pipeline-part
+  "dev/pipeline"
+  "Component of URL for viewing the pipeline.")
+
+(duckpan-defcustom-url-part ia-part
+  "ia"
+  "Component of URL for accessing instant answers.")
+
+(defun duckpan-join-url (&rest url-components)
+  "Join each of URL-COMPONENTS with a url delimiter."
+  (mapconcat 'identity url-components "/"))
+
+(defun duckpan-url-query (url query)
+  "Get a query url for URL and QUERY."
+  (format "%s?q=%s" url query))
 
 (defun duckpan-project-repos ()
   "Available project repositories."
@@ -205,6 +234,13 @@ TYPE should be one of Spice or Goodie."
   (interactive)
   (let ((name (or name (duckpan-choose-instant-answer))))
     (browse-url (duckpan-get-instant-answer-url name))))
+
+(defun duckpan-duck-co-search-ia (&optional name)
+  "Open an instant answer search for NAME in a browser."
+  (interactive "MSearch for what?: ")
+  (browse-url (duckpan-url-query
+               (duckpan-join-url duckpan-duck-co-url-base duckpan-duck-co-url-ia-part)
+               name)))
 
 
 
