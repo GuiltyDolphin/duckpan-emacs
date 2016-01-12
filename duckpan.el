@@ -226,7 +226,10 @@ TYPE should be one of Spice or Goodie."
 
 (defun duckpan-get-instant-answer-url (name)
   "Get the url for NAME."
-  (format "%s%s" duckpan-instant-answer-url-base (duckpan-ia-name-to-share name)))
+  (duckpan-join-url duckpan-duck-co-url-base
+                    duckpan-duck-co-url-ia-part
+                    duckpan-duck-co-url-view-url-part
+                    (duckpan-ia-name-to-share name)))
 
 ;;;###autoload
 (defun duckpan-navigate-to-instant-answer-page (&optional name)
