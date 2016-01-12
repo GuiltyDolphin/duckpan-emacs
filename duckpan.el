@@ -235,6 +235,7 @@ TYPE should be one of Spice or Goodie."
   (let ((name (or name (duckpan-choose-instant-answer))))
     (browse-url (duckpan-get-instant-answer-url name))))
 
+;;;###autoload
 (defun duckpan-duck-co-search-ia (&optional name)
   "Open an instant answer search for NAME in a browser."
   (interactive "MSearch for what?: ")
@@ -242,6 +243,7 @@ TYPE should be one of Spice or Goodie."
                (duckpan-join-url duckpan-duck-co-url-base duckpan-duck-co-url-ia-part)
                name)))
 
+;;;###autoload
 (defun duckpan-duck-co-search-dev-pipeline (&optional name)
   "Open an instant answer development pipeline search for NAME in a browser."
   (interactive "MSearch for what?: ")
