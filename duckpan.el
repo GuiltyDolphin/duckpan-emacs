@@ -158,12 +158,18 @@ Return NIL if no project is found."
       (message "duckpan is already installed on the system.")
     (duckpan-install)))
 
+(defun upper-case-p (str)
+  "Return non-NIL if STR is entirely upper-case."
+  (let ((case-fold-search nil))
+    (string-match-p "^[^a-z]*$" str)))
+
 (defun duckpan-ia-name-to-share (name)
   "Return a valid share directory version of NAME."
-  (substring (downcase
-              (let ((case-fold-search nil))
-                (replace-regexp-in-string "[A-Z]" (lambda (c) (format "_%s" c)) name)))
-             1))
+  (downcase
+   (let ((case-fold-search nil))
+     (if (upper-case-p name)
+         name
+       (substring (replace-regexp-in-string "[A-Z]" (lambda (c) (format "_%s" c)) name) 1)))))
 
 (defun duckpan-ia-path-to-perl (type name)
   "Get the expected relative perl path for a TYPE instant-answer called NAME.
