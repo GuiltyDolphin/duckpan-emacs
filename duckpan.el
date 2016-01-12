@@ -45,9 +45,9 @@ Default value is STANDARD and the documentation string is DOC."
   :group 'duckpan
   :type 'list)
 
-(duckpan-defcustom-url-part base
-  "https://duck.co"
-  "duck.co URL.")
+(duckpan-defcustom-url-part ia-base
+ "https://duck.co/ia"
+ "Base duck.co URL for instant answers.")
 
 (duckpan-defcustom-url-part view-url-part
   "view"
@@ -56,10 +56,6 @@ Default value is STANDARD and the documentation string is DOC."
 (duckpan-defcustom-url-part pipeline-part
   "dev/pipeline"
   "Component of URL for viewing the pipeline.")
-
-(duckpan-defcustom-url-part ia-part
-  "ia"
-  "Component of URL for accessing instant answers.")
 
 (defun duckpan-join-url (&rest url-components)
   "Join each of URL-COMPONENTS with a url delimiter."
@@ -226,8 +222,7 @@ TYPE should be one of Spice or Goodie."
 
 (defun duckpan-get-instant-answer-url (name)
   "Get the url for NAME."
-  (duckpan-join-url duckpan-duck-co-url-base
-                    duckpan-duck-co-url-ia-part
+  (duckpan-join-url duckpan-duck-co-url-ia-base
                     duckpan-duck-co-url-view-url-part
                     (duckpan-ia-name-to-share name)))
 
@@ -243,7 +238,7 @@ TYPE should be one of Spice or Goodie."
   "Open an instant answer search for NAME in a browser."
   (interactive "MSearch for what?: ")
   (browse-url (duckpan-url-query
-               (duckpan-join-url duckpan-duck-co-url-base duckpan-duck-co-url-ia-part)
+               duckpan-duck-co-url-ia-base
                name)))
 
 ;;;###autoload
@@ -251,8 +246,7 @@ TYPE should be one of Spice or Goodie."
   "Open an instant answer development pipeline search for NAME in a browser."
   (interactive "MSearch for what?: ")
   (browse-url (duckpan-url-query
-               (duckpan-join-url duckpan-duck-co-url-base
-                                 duckpan-duck-co-url-ia-part
+               (duckpan-join-url duckpan-duck-co-url-ia-base
                                  duckpan-duck-co-url-pipeline-part)
                name)))
 
