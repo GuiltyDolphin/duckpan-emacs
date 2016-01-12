@@ -242,6 +242,15 @@ TYPE should be one of Spice or Goodie."
                (duckpan-join-url duckpan-duck-co-url-base duckpan-duck-co-url-ia-part)
                name)))
 
+(defun duckpan-duck-co-search-dev-pipeline (&optional name)
+  "Open an instant answer development pipeline search for NAME in a browser."
+  (interactive "MSearch for what?: ")
+  (browse-url (duckpan-url-query
+               (duckpan-join-url duckpan-duck-co-url-base
+                                 duckpan-duck-co-url-ia-part
+                                 duckpan-duck-co-url-pipeline-part)
+               name)))
+
 
 
 (provide 'duckpan)
