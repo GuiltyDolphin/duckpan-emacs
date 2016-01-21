@@ -2,6 +2,7 @@
 ;;; Code:
 
 (require 'duckpan-duck-co-tests)
+(require 'duckpan-github-tests)
 (require 'duckpan-ia-tests)
 
 (provide 'duckpan-tests)
