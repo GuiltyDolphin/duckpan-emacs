@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'duckpan-core)
+(require 'duckpan-ia)
 
 (defmacro duckpan-defcustom-url-part (symbol standard doc)
   "Define a custom duck-co url variable with name SYMBOL.
@@ -37,8 +38,6 @@ Default value is STANDARD and the documentation string is DOC."
   `(defvar ,(intern (concat "duckpan-duck-co-url-" (symbol-name symbol)))
      ,standard
      ,doc))
-  ;   :group 'duckpan
-  ;   :type 'string))
 
 (duckpan-defcustom-url-part ia-base
  "https://duck.co/ia"
@@ -60,11 +59,6 @@ Default value is STANDARD and the documentation string is DOC."
   "Get a query url for URL and QUERY."
   (format "%s?q=%s" url query))
 
-(defun upper-case-p (str)
-  "Return non-NIL if STR is entirely upper-case."
-  (let ((case-fold-search nil))
-    (string-match-p "^[^a-z]*$" str)))
-
 (defun duckpan-duck-co-ia-url (name)
   "Get the url for viewing the instant answer NAME."
   (duckpan-join-url duckpan-duck-co-url-ia-base
@@ -75,7 +69,7 @@ Default value is STANDARD and the documentation string is DOC."
 (defun duckpan-navigate-to-instant-answer-page (&optional name)
   "Open the instant answer page for NAME in a browser."
   (interactive)
-  (let ((name (or name (duckpan-choose-instant-answer))))
+  (let ((name (or name (duckpan-ia-choose-instant-answer))))
     (browse-url (duckpan-duck-co-ia-url name))))
 
 ;;;###autoload

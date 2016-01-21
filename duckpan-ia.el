@@ -29,11 +29,6 @@
 
 (require 'duckpan-core)
 
-(defun upper-case-p (str)
-  "Return non-NIL if STR is entirely upper-case."
-  (let ((case-fold-search nil))
-    (string-match-p "^[^a-z]*$" str)))
-
 (defun duckpan-ia-name-to-share (name)
   "Return a valid share directory version of NAME."
   (downcase
@@ -87,7 +82,9 @@ TYPE should be one of Spice or Goodie."
 
 (defun duckpan-ia-choose-instant-answer ()
   "Get the user to choose from the available instant answers."
-  (completing-read "Choose an instant answer: " (duckpan-instant-answers)))
+  (with-duckpan-project-root
+    (let ((type (duckpan-get-ddg-project-type default-directory)))
+      (completing-read "Choose an instant answer: " (duckpan-instant-answers default-directory type)))))
 
 ;;;###autoload
 (defun duckpan-ia-goto-instant-answer (&optional name)
