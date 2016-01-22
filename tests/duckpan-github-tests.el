@@ -25,7 +25,7 @@
           (cd "zeroclickinfo-goodies")
           (with-temp-buffer
             (call-process "git" nil t nil "remote" "show" "-n" "origin")
-            (let ((check-string (mapcar 'string-trim (split-string (buffer-string) "\n"))))
+            (let ((check-string (split-string (buffer-string) "\n" t split-string-default-separators)))
               (should (member goodies-origin-fetch-url check-string)))))
       (delete-directory temp-dir t))))
 
