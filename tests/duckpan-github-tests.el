@@ -12,7 +12,7 @@
 (ert-deftest test-duckpan-github-clone ()
   "Test correct cloning of fork."
   (let* ((temp-dir (make-temp-file "duckpan-github-test" t))
-         (make-url (lambda (type name) (format "%s URL: https://github.com/%s/zeroclickinfo-goodies" type name)))
+         (make-url (lambda (type name) (format "  %s URL: https://github.com/%s/zeroclickinfo-goodies" type name)))
          (goodies-origin-fetch-url (funcall make-url "Fetch" "GuiltyDolphin"))
          (goodies-origin-push-url (funcall make-url "Push" "GuiltyDolphin"))
          (goodies-remote-fetch-url (funcall make-url "Fetch" "duckduckgo"))
@@ -25,7 +25,7 @@
           (cd "zeroclickinfo-goodies")
           (with-temp-buffer
             (call-process "git" nil t nil "remote" "show" "-n" "origin")
-            (let ((check-string (split-string (buffer-string) "\n" t split-string-default-separators)))
+            (let ((check-string (split-string (buffer-string) "\n" t)))
               (should (member goodies-origin-fetch-url check-string)))))
       (delete-directory temp-dir t))))
 
