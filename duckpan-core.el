@@ -47,7 +47,7 @@
   "Get the project type for PATH.
 
 Return NIL if no project is found."
-  (let ((path (buffer-file-name)))
+  (let ((path default-directory))
     (catch 'pval
       (dolist (project (duckpan-project-repos))
         (when (string-match-p project path)
