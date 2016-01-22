@@ -21,11 +21,11 @@
         (with-temp-buffer
           (cd temp-dir)
           (duckpan-github-initialize-repo "GuiltyDolphin" "zeroclickinfo-goodies")
-          (should (member "zeroclickinfo-goodies" (list-directory temp-dir)))
-          (cd (concat temp-dir "zeroclickinfo-goodies/"))
+          (should (member "zeroclickinfo-goodies" (directory-files temp-dir)))
+          (cd "zeroclickinfo-goodies")
           (with-temp-buffer
             (call-process "git" nil t nil "remote" "show" "-n" "origin")
-            (let ((check-string (split-string (buffer-string) "\n")))
+            (let ((check-string (mapcar 'string-trim (split-string (buffer-string) "\n"))))
               (should (member goodies-origin-fetch-url check-string)))))
       (delete-directory temp-dir t))))
 
