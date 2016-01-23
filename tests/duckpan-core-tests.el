@@ -55,5 +55,14 @@
   (should (equal "foo/bar/baz" (duckpan-get-path-with-directory "foo/bar/baz/qaz" "baz")))
   (should (equal nil (duckpan-get-path-with-directory "foo/bar/baz" "qaz"))))
 
+(ert-deftest test-retrieve-from-cache ()
+  "Test retrieving paths from the cache."
+  (with-temp-directory "duckpan-tests"
+    (let* ((temp-dir default-directory)
+          (duckpan-cache-directory (concat temp-dir "/cache")))
+      (make-directory "cache/foo" t)
+      (should (equal (concat temp-dir "cache/foo") (duckpan-retrieve-path-from-cache "foo")))
+      (should (equal nil (duckpan-retrieve-path-from-cache "bar"))))))
+
 (provide 'duckpan-core-tests)
 ;;; duckpan-core-tests.el ends here

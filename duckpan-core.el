@@ -34,6 +34,11 @@
   :group 'duckpan
   :type 'list)
 
+(defcustom duckpan-cache-directory "~/.duckpan-emacs/cache"
+  "Directory in which cached objects will be stored."
+  :group 'duckpan
+  :type 'string)
+
 (defun duckpan-project-repos ()
   "Available project repositories."
   (mapcar 'cdr duckpan-instant-answer-projects))
@@ -99,6 +104,13 @@ Return nil if DIR is not in PATH."
          (progn ,@body))
      (message "Not in a valid duckpan project directory.")))
 
+(defun duckpan-retrieve-path-from-cache (path)
+  "Return a full path to PATH if it exists in the cache directory.
+
+See `duckpan-cache-directory' for customizing the cache location."
+  (let ((check-path (expand-file-name path duckpan-cache-directory)))
+    (when (file-exists-p check-path)
+      check-path)))
 
 
 (provide 'duckpan-core)
