@@ -53,15 +53,19 @@ Return NIL if no project is found."
         (when (string-match-p project path)
           (throw 'pval (car (rassoc project duckpan-instant-answer-projects))))))))
 
+(defun duckpan-get-path-with-directory (path dir)
+  "Return the section of PATH, up to and including DIR if it exists.
+
+Return nil if DIR is not in PATH."
+  (let ((match-pos (string-match dir path)))
+    (when match-pos
+      (substring path 0 (+ match-pos (length dir))))))
+
 (defun duckpan-project-root (path)
   "Get the directory in PATH in which to execute duckpan commands."
   (let ((project (assoc-default (duckpan-get-ddg-project-type path) duckpan-instant-answer-projects)))
     (when project
-      (let* ((full-path (buffer-file-name))
-             (start (string-match project full-path)))
-        (when start
-          (file-name-as-directory
-           (concat (substring full-path 0 start) project)))))))
+      (duckpan-get-path-with-directory path project))))
 
 (defun duckpan-get-install ()
   "Retrieve duckpan installation script."
@@ -91,9 +95,8 @@ Return NIL if no project is found."
   (declare (indent 0) (debug t))
   `(if (duckpan-project-p default-directory)
        (with-temp-buffer
-         (let ((path (duckpan-project-root default-directory)))
-           (cd path)
-           (progn ,@body)))
+         (cd (duckpan-project-root default-directory))
+         (progn ,@body))
      (message "Not in a valid duckpan project directory.")))
 
 
