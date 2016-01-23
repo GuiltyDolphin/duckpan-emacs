@@ -64,5 +64,16 @@
       (should (equal (concat temp-dir "cache/foo") (duckpan-retrieve-path-from-cache "foo")))
       (should (equal nil (duckpan-retrieve-path-from-cache "bar"))))))
 
+(ert-deftest test-write-to-cache ()
+  "Test adding files to the cache."
+  (with-temp-directory "duckpan-tests"
+    (let* ((temp-dir default-directory)
+           (duckpan-cache-directory (concat temp-dir "/cache")))
+      (make-directory "cache")
+      (should (equal nil (duckpan-retrieve-path-from-cache "foo")))
+      (duckpan-cache-add-file "foo" "Hello!")
+      (should (equal (concat temp-dir "cache/foo") (duckpan-retrieve-path-from-cache "foo")))
+      (should (equal "Hello!" (duckpan-cache-read-file "foo"))))))
+
 (provide 'duckpan-core-tests)
 ;;; duckpan-core-tests.el ends here
