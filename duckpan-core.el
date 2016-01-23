@@ -114,11 +114,9 @@ See `duckpan-cache-directory' for customizing the cache location."
 
 (defun duckpan-cache-add-file (path &optional contents)
   "Add a file to PATH under the cache directory with default contents CONTENTS if supplied."
-  (with-temp-buffer
-    (let ((dir-comp (file-name-directory path)))
-      (when dir-comp
-        (make-directory (expand-file-name dir-comp duckpan-cache-directory) t))
-      (write-region contents nil (expand-file-name path duckpan-cache-directory)))))
+  (let ((dir-comp (or (file-name-directory path) "")))
+    (make-directory (expand-file-name dir-comp duckpan-cache-directory) t)
+    (write-region contents nil (expand-file-name path duckpan-cache-directory))))
 
 (defun duckpan-cache-read-file (path)
   "Read the contents of PATH from under `duckpan-cache-directory' if it exists.

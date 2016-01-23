@@ -69,11 +69,15 @@
   (with-temp-directory "duckpan-tests"
     (let* ((temp-dir default-directory)
            (duckpan-cache-directory (concat temp-dir "/cache")))
-      (make-directory "cache")
+      (duckpan-cache-add-file "quack")
+      (should (equal (concat temp-dir "cache/quack") (duckpan-retrieve-path-from-cache "quack")))
       (should (equal nil (duckpan-retrieve-path-from-cache "foo")))
       (duckpan-cache-add-file "foo" "Hello!")
       (should (equal (concat temp-dir "cache/foo") (duckpan-retrieve-path-from-cache "foo")))
-      (should (equal "Hello!" (duckpan-cache-read-file "foo"))))))
+      (should (equal "Hello!" (duckpan-cache-read-file "foo")))
+      (duckpan-cache-add-file "bar/baz" "Sub-dir")
+      (should (equal (concat temp-dir "cache/bar") (duckpan-retrieve-path-from-cache "bar")))
+      (should (equal "Sub-dir" (duckpan-cache-read-file "bar/baz"))))))
 
 (provide 'duckpan-core-tests)
 ;;; duckpan-core-tests.el ends here
